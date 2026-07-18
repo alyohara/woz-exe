@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import pygame
 
 from aventura_woz import config
@@ -10,6 +12,12 @@ from aventura_woz.fonts import make_font
 from aventura_woz.scumm import back_button_rect, inventory_rects, verb_grid_rects
 from aventura_woz.state import GameState
 from aventura_woz.world import RoomView
+
+
+def _scanline_alpha() -> int:
+    if sys.platform in ("emscripten", "wasi"):
+        return config.SCANLINE_ALPHA_WEB
+    return config.SCANLINE_ALPHA
 
 
 class Renderer:
@@ -127,7 +135,8 @@ class Renderer:
         if state.paused:
             self._draw_pause(c)
 
-        gfx.draw_scanlines(c, config.SCANLINE_ALPHA)
+        # Solo sobre el arte; el panel de texto queda limpio (legible en web)
+        gfx.draw_scanlines(c, _scanline_alpha(), clip_height=sh)
 
         if state.transition_alpha > 0:
             overlay = pygame.Surface((config.LOGICAL_W, config.LOGICAL_H))

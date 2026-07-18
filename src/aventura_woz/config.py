@@ -67,7 +67,9 @@ FONT_SIZE_SMALL = 12
 FONT_SIZE_VERB = 12
 
 START_CREDITS = 3
-SCANLINE_ALPHA = 28
+# Overlay CRT: en desktop suave; en web casi nulo (el scale rompe el texto)
+SCANLINE_ALPHA = 18
+SCANLINE_ALPHA_WEB = 0
 
 # Música (0.0–1.0); M mutea in-game
 MUSIC_VOLUME = 0.35

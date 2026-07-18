@@ -31,10 +31,20 @@ def hline(
     pygame.draw.line(surface, color, (x, y), (x + w - 1, y))
 
 
-def draw_scanlines(surface: pygame.Surface, alpha: int = config.SCANLINE_ALPHA) -> None:
-    overlay = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
-    for y in range(0, surface.get_height(), 2):
-        pygame.draw.line(
-            overlay, (0, 0, 0, alpha), (0, y), (surface.get_width(), y)
-        )
+def draw_scanlines(
+    surface: pygame.Surface,
+    alpha: int = config.SCANLINE_ALPHA,
+    *,
+    clip_height: int | None = None,
+) -> None:
+    """Scanlines CRT. Si ``clip_height`` está set, solo cubre el arte (no el UI)."""
+    if alpha <= 0:
+        return
+    w, h = surface.get_size()
+    limit = h if clip_height is None else max(0, min(h, clip_height))
+    if limit <= 0:
+        return
+    overlay = pygame.Surface((w, limit), pygame.SRCALPHA)
+    for y in range(0, limit, 2):
+        pygame.draw.line(overlay, (0, 0, 0, alpha), (0, y), (w, y))
     surface.blit(overlay, (0, 0))
