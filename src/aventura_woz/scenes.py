@@ -206,30 +206,27 @@ def draw_splash(surface: pygame.Surface, rect: pygame.Rect, state: GameState) ->
     clip = surface.subsurface(rect)
     _blit_bg(clip, "splash.png")
     cx = rect.width // 2
-    # Caja opaca detrás de los créditos (más legible al escalar en web)
-    panel = pygame.Surface((min(rect.width - 24, 420), 118), pygame.SRCALPHA)
-    panel.fill((0, 0, 0, 200))
-    panel_rect = panel.get_rect(center=(cx, 58))
-    clip.blit(panel, panel_rect)
-    f = make_font(15, bold=True)
+    f = make_font(14, bold=True)
     line1 = f.render("Leonardo Bianco", True, config.YELLOW)
-    clip.blit(line1, line1.get_rect(center=(cx, 22)))
-    line2 = make_font(13).render("presenta", True, config.WHITE)
-    clip.blit(line2, line2.get_rect(center=(cx, 40)))
-    big = make_font(26, bold=True)
+    shadow = f.render("Leonardo Bianco", True, config.BG)
+    clip.blit(shadow, line1.get_rect(center=(cx + 1, 18)))
+    clip.blit(line1, line1.get_rect(center=(cx, 17)))
+    line2 = make_font(12).render("presenta", True, config.WHITE)
+    clip.blit(line2, line2.get_rect(center=(cx, 34)))
+    big = make_font(22, bold=True)
     title = big.render("WOZ.exe", True, config.PHOSPHOR)
-    clip.blit(title, title.get_rect(center=(cx, 62)))
-    credit = make_font(12).render(
+    clip.blit(title, title.get_rect(center=(cx, 58)))
+    credit = make_font(11).render(
         "inspirado en la programación de Flavio Speche", True, config.CYAN
     )
-    clip.blit(credit, credit.get_rect(center=(cx, 84)))
-    tip = make_font(12).render(
+    clip.blit(credit, credit.get_rect(center=(cx, 80)))
+    tip = make_font(11).render(
         "Click o ENTER para continuar…", True, config.GRAY
     )
     if (_ticks() // 500) % 2 == 0:
-        tip_bg = pygame.Surface((tip.get_width() + 12, tip.get_height() + 6))
+        tip_bg = pygame.Surface((tip.get_width() + 10, tip.get_height() + 4))
         tip_bg.fill(config.BG)
-        tip_r = tip.get_rect(center=(cx, rect.height - 16))
+        tip_r = tip.get_rect(center=(cx, rect.height - 14))
         clip.blit(tip_bg, tip_bg.get_rect(center=tip_r.center))
         clip.blit(tip, tip_r)
 

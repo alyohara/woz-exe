@@ -1,4 +1,4 @@
-"""Fuentes: TTF embebida (legible en desktop y WASM/pygbag)."""
+"""Fuentes: TTF embebida (definición nítida; mismo tamaño visual que antes)."""
 
 from __future__ import annotations
 
@@ -20,17 +20,11 @@ def _is_web() -> bool:
     return sys.platform in ("emscripten", "wasi")
 
 
-def _effective_size(size: int) -> int:
-    """En web el canvas 640×400 se escala: tipografía un poco mayor = más nítida."""
-    if _is_web():
-        return max(size + 2, int(round(size * 1.25)))
-    return size
-
-
 def make_font(size: int, bold: bool = False) -> pygame.font.Font:
-    """Fuente usable; prioriza TTF del proyecto (no el bitmap por defecto)."""
-    size = _effective_size(size)
-    key = (size, bold)
+    """Fuente usable; TTF del proyecto sin agrandar (evita solapes en UI)."""
+    # DejaVu a N px rinde más alto que SysFont/None: compensar ~1–2 px
+    ttf_size = max(8, size - 1)
+    key = (ttf_size, bold)
     cached = _cache.get(key)
     if cached is not None:
         return cached
@@ -41,7 +35,7 @@ def make_font(size: int, bold: bool = False) -> pygame.font.Font:
 
     if path.exists():
         try:
-            font = pygame.font.Font(str(path), size)
+            font = pygame.font.Font(str(path), ttf_size)
             if bold and path == _TTF:
                 font.set_bold(True)
         except (pygame.error, OSError) as exc:
@@ -49,7 +43,6 @@ def make_font(size: int, bold: bool = False) -> pygame.font.Font:
             font = None
 
     if font is None:
-        # Fallback SysFont / default
         names: list[str | None]
         if _is_web():
             names = ["dejavusansmono", "freesans", None]

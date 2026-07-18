@@ -61,10 +61,10 @@ SENTENCE_COLOR = MAGENTA
 INV_COLOR = MAGENTA
 
 FONT_FAMILY = "consolas"
-FONT_SIZE = 15
+FONT_SIZE = 14
 FONT_SIZE_TITLE = 18
-FONT_SIZE_SMALL = 13
-FONT_SIZE_VERB = 13
+FONT_SIZE_SMALL = 12
+FONT_SIZE_VERB = 12
 
 START_CREDITS = 3
 # Overlay CRT: en desktop suave; en web apagado (rompe la lectura al escalar)

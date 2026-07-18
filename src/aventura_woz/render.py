@@ -300,7 +300,7 @@ class Renderer:
             c.blit(surf, ((config.LOGICAL_W - surf.get_width()) // 2, y0 + pad + i * line_h))
 
     def _blit_wrapped(self, screen, text, x, y, max_width, color, max_y) -> int:
-        line_h = max(15, self._font.get_linesize())
+        line_h = 15
         for paragraph in text.split("\n"):
             if y + line_h > max_y:
                 if y < max_y:
