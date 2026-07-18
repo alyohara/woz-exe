@@ -29,7 +29,9 @@ No depende del visualizador `ds_visualizer` (proyecto hermano / origen pedagógi
 - **Música**: un tema por acto; `M` mute; se puede reemplazar con `.ogg`/`.mp3`.
 - **Idioma**: ES en UI; guiños EN (HAL, boot).
 
-## Flujo de salas
+## Web (pygbag)
 
-`splash → boot → perfil → homebrew → … → ending`  
-Flags y pasos en `state.py` / `world.py` (Actos I–III).
+- Entrada: `src/main.py` (loop `async` + `await asyncio.sleep(0)`).
+- Mismo código que desktop; `sys.platform == "emscripten"` desactiva resize.
+- Build: `python -m pygbag --build … src` → `src/build/web/`.
+- CI: `.github/workflows/deploy-web.yml` → GitHub Pages.

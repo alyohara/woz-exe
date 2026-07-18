@@ -5,7 +5,7 @@ from __future__ import annotations
 import pygame
 
 from aventura_woz import config
-from aventura_woz.audio import MusicPlayer
+from aventura_woz.music import MusicPlayer
 from aventura_woz.render import Renderer
 from aventura_woz.scumm import back_button_rect, inventory_rects, verb_grid_rects
 from aventura_woz.state import GameState

@@ -1,4 +1,7 @@
-"""Música de fondo WOZ.exe — loops por acto; mute con M."""
+"""Música de fondo WOZ.exe — loops por acto; mute con M.
+
+Los archivos van en la carpeta hermana ``audio/`` (wav/ogg/mp3).
+"""
 
 from __future__ import annotations
 
@@ -76,7 +79,6 @@ _MELODIES: dict[str, tuple[list[float], float, float]] = {
 
 def _ensure_track(stem: str) -> Path | None:
     """Devuelve path .wav/.ogg/.mp3 si existe; si no, genera chiptune .wav."""
-    _AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     for ext in (".ogg", ".mp3", ".wav"):
         path = _AUDIO_DIR / f"{stem}{ext}"
         if path.exists():
@@ -85,8 +87,13 @@ def _ensure_track(stem: str) -> Path | None:
         return None
     path = _AUDIO_DIR / f"{stem}.wav"
     if not path.exists():
-        _write_chiptune(path, *_MELODIES[stem])
-    return path
+        try:
+            _AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+            _write_chiptune(path, *_MELODIES[stem])
+        except OSError:
+            # FS de solo lectura (p.ej. navegador): sin pista
+            return None
+    return path if path.exists() else None
 
 
 def _write_chiptune(

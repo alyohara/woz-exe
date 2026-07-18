@@ -29,9 +29,10 @@ No es un visualizador de estructuras: es una **aventura** que las usa como mecá
 | Tecnología | Uso |
 |---|---|
 | **Python 3.11+** | Lenguaje |
-| **[pygame-ce](https://pyga.game/) 2.5.7** | Gráficos, input, audio (`import pygame`) |
+| **[pygame-ce](https://pyga.me/) 2.5.7** | Gráficos, input, audio (`import pygame`) |
+| **[pygbag](https://pygame-web.github.io/)** | Build web (WASM) — ver `requirements-web.txt` |
 | Pixel art propio | Fondos en `src/aventura_woz/imgs/` |
-| Audio procedural + archivos | Temas chiptune en `audio/` (reemplazables) |
+| Audio | Temas en `aventura_woz/audio/` (reemplazables) |
 
 Sin otras dependencias externas.
 
@@ -59,17 +60,14 @@ pip install -r requirements.txt
 
 ---
 
-## Cómo jugar
+## Cómo jugar (desktop)
 
 ```powershell
 cd src
 python -m aventura_woz
 ```
 
-1. Elegí un **verbo** abajo (Ir a, Mirar, Usar…).
-2. Clickeá un **objeto** o salida en la escena.
-3. La línea magenta arma la frase: `Usar GRID-01 con Módem`.
-4. Si te trabás: **`H`** muestra la pista de la sala.
+También: `python main.py` desde `src/`.
 
 ### Controles
 
@@ -86,6 +84,38 @@ python -m aventura_woz
 | Letras + Enter | Nombre / handle al crear perfil |
 | `Ctrl+A` | Debug: avanza como si resolviste la pantalla |
 | `Ctrl+Q` | Salir |
+
+---
+
+## Versión web (navegador)
+
+El juego se empaqueta con **[pygbag](https://pygame-web.github.io/)** (Python + pygame-ce → WebAssembly).
+
+### Probar en local
+
+```powershell
+pip install -r requirements-web.txt
+python -m pygbag --ume_block 0 --disable-sound-format-error src
+```
+
+Abrí la URL que muestre la consola (suele ser `http://localhost:8000`).  
+El primer click en la página desbloquea el audio en muchos navegadores.
+
+### Build estático
+
+```powershell
+python -m pygbag --build --ume_block 0 --disable-sound-format-error --app_name woz-exe --title "WOZ.exe" src
+```
+
+Sale en `src/build/web/` (listo para cualquier hosting estático).
+
+### GitHub Pages
+
+Al pushear a `main`, el workflow `.github/workflows/deploy-web.yml` construye y publica.
+
+1. En el repo: **Settings → Pages → Source: GitHub Actions**
+2. Esperá que corra el action *Deploy web*
+3. La URL queda: `https://alyohara.github.io/woz-exe/`
 
 ---
 
@@ -133,18 +163,16 @@ Luego: **epílogo** (Woz libre).
 ```
 woz-exe/
 ├── README.md
-├── ARCHITECTURE.md      # decisiones técnicas
-├── AGENTS.md            # convenciones para desarrollo
-├── requirements.txt
+├── ARCHITECTURE.md
+├── requirements.txt          # juego (desktop)
+├── requirements-web.txt      # pygbag
+├── .github/workflows/        # deploy a GitHub Pages
 ├── docs/
-│   ├── GUION_AVENTURA_WOZ.md
-│   └── SCRIPT_VERTICAL_SLICE.md
 └── src/
-    └── aventura_woz/    # el juego
-        ├── imgs/        # fondos pixel-art
-        ├── audio/       # temas (.wav generados o tus .ogg/.mp3)
-        ├── world.py     # salas y puzzles
-        ├── game.py      # input / loop SCUMM
+    ├── main.py               # entrada pygbag / desktop
+    └── aventura_woz/         # el juego
+        ├── imgs/
+        ├── audio/
         └── ...
 ```
 
