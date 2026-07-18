@@ -1,5 +1,8 @@
 # WOZ.exe — Rescate en el Ciberespacio
 
+**Jugar online:** [alyohara.github.io/woz-exe](https://alyohara.github.io/woz-exe/)  
+**Código:** [github.com/alyohara/woz-exe](https://github.com/alyohara/woz-exe)
+
 Aventura gráfica **point-and-click** al estilo **SCUMM / Maniac Mansion**, hecha con **pygame-ce**.  
 Steve Wozniak desapareció del laboratorio Homebrew. Un Apple II solo murmura:
 
