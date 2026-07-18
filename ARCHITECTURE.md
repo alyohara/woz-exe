@@ -33,7 +33,9 @@ No depende del visualizador `ds_visualizer` (proyecto hermano / origen pedagógi
 
 - Entrada: `src/main.py` (loop `async` + `await asyncio.sleep(0)`).
 - Mismo código que desktop; `sys.platform == "emscripten"` desactiva resize y el mixer WAV.
-- Fuentes: `fonts.py` (fallback sin Consolas en WASM).
+- Fuentes: TTF embebida `assets/DejaVuSansMono*.ttf` vía `fonts.py` (evita el
+  bitmap por defecto de pygame, ilegible al escalar en web). En WASM: tipografía
+  un poco mayor + `smoothscale` al presentarlo.
 - **Trampa evitada:** no usar `import wave` (stdlib). Pygbag lo confunde con el
   paquete PyPI `wave` e intenta instalar dependencias → pantalla gris tras el loading.
   Los WAV se escriben a mano con `struct` si hace falta generarlos.

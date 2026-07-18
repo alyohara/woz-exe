@@ -61,15 +61,18 @@ SENTENCE_COLOR = MAGENTA
 INV_COLOR = MAGENTA
 
 FONT_FAMILY = "consolas"
-FONT_SIZE = 14
+FONT_SIZE = 15
 FONT_SIZE_TITLE = 18
-FONT_SIZE_SMALL = 12
-FONT_SIZE_VERB = 12
+FONT_SIZE_SMALL = 13
+FONT_SIZE_VERB = 13
 
 START_CREDITS = 3
-# Overlay CRT: en desktop suave; en web casi nulo (el scale rompe el texto)
+# Overlay CRT: en desktop suave; en web apagado (rompe la lectura al escalar)
 SCANLINE_ALPHA = 18
 SCANLINE_ALPHA_WEB = 0
+
+# Escala final: en web smoothscale da tipografía más definida
+USE_SMOOTH_SCALE_WEB = True
 
 # Música (0.0–1.0); M mutea in-game
 MUSIC_VOLUME = 0.35

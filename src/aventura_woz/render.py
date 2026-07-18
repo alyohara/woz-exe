@@ -152,7 +152,14 @@ class Renderer:
         sh_px = max(1, int(config.LOGICAL_H * scale))
         ox, oy = (width - sw) // 2, (height - sh_px) // 2
         self.last_offset = (ox, oy)
-        scaled = pygame.transform.scale(c, (sw, sh_px))
+        if (
+            sys.platform in ("emscripten", "wasi")
+            and config.USE_SMOOTH_SCALE_WEB
+            and (sw, sh_px) != (config.LOGICAL_W, config.LOGICAL_H)
+        ):
+            scaled = pygame.transform.smoothscale(c, (sw, sh_px))
+        else:
+            scaled = pygame.transform.scale(c, (sw, sh_px))
         screen.blit(scaled, (ox, oy))
         if scale >= 1.15:
             pygame.draw.rect(
@@ -293,7 +300,7 @@ class Renderer:
             c.blit(surf, ((config.LOGICAL_W - surf.get_width()) // 2, y0 + pad + i * line_h))
 
     def _blit_wrapped(self, screen, text, x, y, max_width, color, max_y) -> int:
-        line_h = 15
+        line_h = max(15, self._font.get_linesize())
         for paragraph in text.split("\n"):
             if y + line_h > max_y:
                 if y < max_y:
