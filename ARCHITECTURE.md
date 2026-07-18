@@ -39,5 +39,6 @@ No depende del visualizador `ds_visualizer` (proyecto hermano / origen pedagógi
 - **Trampa evitada:** no usar `import wave` (stdlib). Pygbag lo confunde con el
   paquete PyPI `wave` e intenta instalar dependencias → pantalla gris tras el loading.
   Los WAV se escriben a mano con `struct` si hace falta generarlos.
-- Build: `python -m pygbag --build … src` → `src/build/web/`.
+- Build: `python -m pygbag --build --width 1280 --height 800 --CONSOLE 0 … src`
+  + `scripts/patch_web_index.py` (sin consola/scroll; AR 16:10 = 2×640×400).
 - CI: `.github/workflows/deploy-web.yml` → GitHub Pages.

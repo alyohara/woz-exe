@@ -144,24 +144,31 @@ class Renderer:
             overlay.set_alpha(int(state.transition_alpha))
             c.blit(overlay, (0, 0))
 
-        screen.fill(config.BG)
-        scale = min(width / config.LOGICAL_W, height / config.LOGICAL_H)
-        scale = max(scale, 0.5)
+        # Escala entera cuando cabe (p.ej. 1280×800 → ×2 exacto): más nítido
+        fit = min(width / config.LOGICAL_W, height / config.LOGICAL_H)
+        int_scale = max(1, int(fit))
+        if abs(fit - int_scale) < 0.02:
+            scale = float(int_scale)
+        else:
+            scale = max(fit, 0.5)
         self.last_scale = scale
         sw = max(1, int(config.LOGICAL_W * scale))
         sh_px = max(1, int(config.LOGICAL_H * scale))
         ox, oy = (width - sw) // 2, (height - sh_px) // 2
         self.last_offset = (ox, oy)
-        if (
+        screen.fill(config.BG)
+        use_smooth = (
             sys.platform in ("emscripten", "wasi")
             and config.USE_SMOOTH_SCALE_WEB
+            and scale != int(scale)
             and (sw, sh_px) != (config.LOGICAL_W, config.LOGICAL_H)
-        ):
+        )
+        if use_smooth:
             scaled = pygame.transform.smoothscale(c, (sw, sh_px))
         else:
             scaled = pygame.transform.scale(c, (sw, sh_px))
         screen.blit(scaled, (ox, oy))
-        if scale >= 1.15:
+        if scale >= 1.15 and sys.platform not in ("emscripten", "wasi"):
             pygame.draw.rect(
                 screen, config.PHOSPHOR_DIM, (ox - 2, oy - 2, sw + 4, sh_px + 4), 2
             )

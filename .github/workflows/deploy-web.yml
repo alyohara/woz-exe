@@ -31,10 +31,14 @@ jobs:
         run: >
           python -m pygbag --build --ume_block 0
           --disable-sound-format-error
+          --width 1280 --height 800 --CONSOLE 0
           --app_name woz-exe
           --title "WOZ.exe"
           --package org.alyohara.wozexe
           src
+
+      - name: Patch web layout (no scroll / full frame)
+        run: python scripts/patch_web_index.py
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

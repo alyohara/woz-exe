@@ -38,7 +38,7 @@ async def _run_game(screen: pygame.Surface | None = None) -> None:
 
     if screen is None:
         if _is_web():
-            screen = pygame.display.set_mode((1280, 720))
+            screen = pygame.display.set_mode((1280, 800))
         else:
             screen = pygame.display.set_mode(
                 (config.WINDOW_WIDTH, config.WINDOW_HEIGHT),
