@@ -7,6 +7,7 @@ from pathlib import Path
 import pygame
 
 from aventura_woz import config
+from aventura_woz.fonts import make_font
 from aventura_woz.state import GameState
 
 _IMGS = Path(__file__).resolve().parent / "imgs"
@@ -41,10 +42,10 @@ def get_bg(filename: str, scene_w: int, scene_h: int) -> pygame.Surface:
             for y in range(0, scene_h, 4):
                 pygame.draw.line(surf, (20, 14, 40), (0, y), (scene_w, y))
             label = filename.replace(".png", "").upper()
-            font = pygame.font.SysFont(config.FONT_FAMILY, 18, bold=True)
+            font = make_font(18, bold=True)
             t = font.render(f"[PENDIENTE] {label}", True, config.CYAN)
             surf.blit(t, t.get_rect(center=(scene_w // 2, scene_h // 2 - 10)))
-            tip = pygame.font.SysFont(config.FONT_FAMILY, 12).render(
+            tip = make_font(12).render(
                 "Generá el PNG y ponelo en imgs/", True, config.GRAY
             )
             surf.blit(tip, tip.get_rect(center=(scene_w // 2, scene_h // 2 + 16)))
@@ -201,23 +202,23 @@ def draw_splash(surface: pygame.Surface, rect: pygame.Rect, state: GameState) ->
     clip = surface.subsurface(rect)
     _blit_bg(clip, "splash.png")
     cx = rect.width // 2
-    f = pygame.font.SysFont(config.FONT_FAMILY, 14, bold=True)
+    f = make_font(14, bold=True)
     line1 = f.render("Leonardo Bianco", True, config.YELLOW)
     shadow = f.render("Leonardo Bianco", True, config.BG)
     clip.blit(shadow, line1.get_rect(center=(cx + 1, 18)))
     clip.blit(line1, line1.get_rect(center=(cx, 17)))
-    line2 = pygame.font.SysFont(config.FONT_FAMILY, 12).render(
+    line2 = make_font(12).render(
         "presenta", True, config.WHITE
     )
     clip.blit(line2, line2.get_rect(center=(cx, 34)))
-    big = pygame.font.SysFont(config.FONT_FAMILY, 22, bold=True)
+    big = make_font(22, bold=True)
     title = big.render("WOZ.exe", True, config.PHOSPHOR)
     clip.blit(title, title.get_rect(center=(cx, 58)))
-    credit = pygame.font.SysFont(config.FONT_FAMILY, 11).render(
+    credit = make_font(11).render(
         "inspirado en la programación de Flavio Speche", True, config.CYAN
     )
     clip.blit(credit, credit.get_rect(center=(cx, 80)))
-    tip = pygame.font.SysFont(config.FONT_FAMILY, 11).render(
+    tip = make_font(11).render(
         "Click o ENTER para continuar…", True, config.GRAY
     )
     if (_ticks() // 500) % 2 == 0:
@@ -238,7 +239,7 @@ def draw_profile(surface: pygame.Surface, rect: pygame.Rect, state: GameState) -
     pygame.draw.rect(clip, config.PHOSPHOR, box, 2)
     buf = state.typing_buffer
     buf = buf + ("█" if (_ticks() // 350) % 2 == 0 else "_")
-    tf = pygame.font.SysFont(config.FONT_FAMILY, 14)
+    tf = make_font(14)
     clip.blit(tf.render(buf[:28], True, config.PHOSPHOR), (box.x + 8, box.y + 6))
 
 
@@ -393,6 +394,6 @@ def draw_ending(surface: pygame.Surface, rect: pygame.Rect, state: GameState) ->
 def draw_game_over(surface: pygame.Surface, rect: pygame.Rect, state: GameState) -> None:
     clip = surface.subsurface(rect)
     _blit_bg(clip, "game_over.png")
-    f = pygame.font.SysFont(config.FONT_FAMILY, 20, bold=True)
+    f = make_font(20, bold=True)
     t = f.render("TIME CREDITS: 0", True, config.RED)
     clip.blit(t, t.get_rect(center=(rect.width // 2, rect.height // 2 + 40)))

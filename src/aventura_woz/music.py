@@ -7,12 +7,16 @@ from __future__ import annotations
 
 import math
 import struct
-import wave
+import sys
 from pathlib import Path
 
 import pygame
 
 from aventura_woz import config
+
+
+def _is_web() -> bool:
+    return sys.platform in ("emscripten", "wasi")
 
 _AUDIO_DIR = Path(__file__).resolve().parent / "audio"
 
@@ -99,7 +103,11 @@ def _ensure_track(stem: str) -> Path | None:
 def _write_chiptune(
     path: Path, notes: list[float], note_len: float, volume: float
 ) -> None:
-    """Loop corto square-wave (estilo DOS / chiptune)."""
+    """Loop corto square-wave (estilo DOS / chiptune).
+
+    Escribe WAV a mano (sin ``import wave``): pygbag confunde el módulo
+    stdlib ``wave`` con el paquete homónimo de PyPI y rompe el arranque web.
+    """
     sample_rate = 22050
     frames: list[int] = []
     for freq in notes:
@@ -109,15 +117,31 @@ def _write_chiptune(
                 sample = 0
             else:
                 t = i / sample_rate
-                # square + leve decay por nota
                 amp = volume * (1.0 - 0.35 * (i / max(n, 1)))
                 sample = amp if math.sin(2 * math.pi * freq * t) >= 0 else -amp
             frames.append(int(max(-1.0, min(1.0, sample)) * 32000))
-    with wave.open(str(path), "w") as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(sample_rate)
-        wf.writeframes(b"".join(struct.pack("<h", f) for f in frames))
+    raw = b"".join(struct.pack("<h", f) for f in frames)
+    nchannels = 1
+    sampwidth = 2
+    byte_rate = sample_rate * nchannels * sampwidth
+    block_align = nchannels * sampwidth
+    header = struct.pack(
+        "<4sI4s4sIHHIIHH4sI",
+        b"RIFF",
+        36 + len(raw),
+        b"WAVE",
+        b"fmt ",
+        16,
+        1,
+        nchannels,
+        sample_rate,
+        byte_rate,
+        block_align,
+        sampwidth * 8,
+        b"data",
+        len(raw),
+    )
+    path.write_bytes(header + raw)
 
 
 class MusicPlayer:
@@ -128,6 +152,10 @@ class MusicPlayer:
         self.muted = False
         self._current = ""
         self._ready = False
+        # WAV en WASM suele colgar el arranque; en web solo OGG/MP3.
+        if _is_web():
+            self.enabled = False
+            return
         try:
             if not pygame.mixer.get_init():
                 pygame.mixer.init(frequency=22050, size=-16, channels=1, buffer=512)
@@ -144,6 +172,8 @@ class MusicPlayer:
             return
         path = _ensure_track(stem)
         if path is None:
+            return
+        if _is_web() and path.suffix.lower() == ".wav":
             return
         try:
             pygame.mixer.music.load(str(path))

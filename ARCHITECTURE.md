@@ -32,6 +32,10 @@ No depende del visualizador `ds_visualizer` (proyecto hermano / origen pedagógi
 ## Web (pygbag)
 
 - Entrada: `src/main.py` (loop `async` + `await asyncio.sleep(0)`).
-- Mismo código que desktop; `sys.platform == "emscripten"` desactiva resize.
+- Mismo código que desktop; `sys.platform == "emscripten"` desactiva resize y el mixer WAV.
+- Fuentes: `fonts.py` (fallback sin Consolas en WASM).
+- **Trampa evitada:** no usar `import wave` (stdlib). Pygbag lo confunde con el
+  paquete PyPI `wave` e intenta instalar dependencias → pantalla gris tras el loading.
+  Los WAV se escriben a mano con `struct` si hace falta generarlos.
 - Build: `python -m pygbag --build … src` → `src/build/web/`.
 - CI: `.github/workflows/deploy-web.yml` → GitHub Pages.

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import sys
+import traceback
 
 import pygame
 
@@ -16,16 +17,39 @@ def _is_web() -> bool:
 
 
 async def main() -> None:
+    try:
+        await _run_game()
+    except Exception:
+        traceback.print_exc()
+        if _is_web():
+            # Mantener vivo el runtime para que la consola muestre el error
+            while True:
+                await asyncio.sleep(1)
+        raise
+
+
+async def _run_game() -> None:
     pygame.init()
     pygame.display.set_caption(
         "WOZ.exe — Leonardo Bianco · inspirado en Flavio Speche"
     )
 
-    flags = 0 if _is_web() else pygame.RESIZABLE
-    screen = pygame.display.set_mode(
-        (config.WINDOW_WIDTH, config.WINDOW_HEIGHT), flags
-    )
+    if _is_web():
+        # Alinear con el framebuffer del template pygbag (1280×720)
+        flags = getattr(pygame, "SCALED", 0)
+        size = (1280, 720)
+    else:
+        flags = pygame.RESIZABLE
+        size = (config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
+
+    screen = pygame.display.set_mode(size, flags)
     clock = pygame.time.Clock()
+
+    # Primer frame visible antes de cargar salas/imágenes pesadas
+    screen.fill((0, 0, 40))
+    pygame.display.flip()
+    await asyncio.sleep(0)
+
     game = Game()
 
     while game.state.running:
@@ -47,8 +71,8 @@ async def main() -> None:
         await asyncio.sleep(0)
 
     game.music.stop()
-    pygame.quit()
     if not _is_web():
+        pygame.quit()
         sys.exit(0)
 
 

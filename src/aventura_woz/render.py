@@ -6,6 +6,7 @@ import pygame
 
 from aventura_woz import config
 from aventura_woz import gfx
+from aventura_woz.fonts import make_font
 from aventura_woz.scumm import back_button_rect, inventory_rects, verb_grid_rects
 from aventura_woz.state import GameState
 from aventura_woz.world import RoomView
@@ -24,16 +25,10 @@ class Renderer:
 
     def _ensure_fonts(self) -> None:
         if self._font is None:
-            self._font = pygame.font.SysFont(config.FONT_FAMILY, config.FONT_SIZE)
-            self._font_title = pygame.font.SysFont(
-                config.FONT_FAMILY, config.FONT_SIZE_TITLE, bold=True
-            )
-            self._font_small = pygame.font.SysFont(
-                config.FONT_FAMILY, config.FONT_SIZE_SMALL
-            )
-            self._font_verb = pygame.font.SysFont(
-                config.FONT_FAMILY, config.FONT_SIZE_VERB, bold=True
-            )
+            self._font = make_font(config.FONT_SIZE)
+            self._font_title = make_font(config.FONT_SIZE_TITLE, bold=True)
+            self._font_small = make_font(config.FONT_SIZE_SMALL)
+            self._font_verb = make_font(config.FONT_SIZE_VERB, bold=True)
 
     def screen_to_logical(self, mx: int, my: int) -> tuple[int, int] | None:
         ox, oy = self.last_offset
