@@ -34,7 +34,11 @@ def get_bg(filename: str, scene_w: int, scene_h: int) -> pygame.Surface:
     if key not in _bg_cache:
         path = _IMGS / filename
         if path.exists():
-            raw = pygame.image.load(str(path)).convert()
+            raw = pygame.image.load(str(path))
+            try:
+                raw = raw.convert()
+            except pygame.error:
+                pass
             _bg_cache[key] = _scale_cover(raw, scene_w, scene_h)
         else:
             surf = pygame.Surface((scene_w, scene_h))

@@ -9,48 +9,49 @@ import traceback
 import pygame
 
 from aventura_woz import config
-from aventura_woz.game import Game
 
 
 def _is_web() -> bool:
     return sys.platform in ("emscripten", "wasi")
 
 
-async def main() -> None:
+async def main(screen: pygame.Surface | None = None) -> None:
     try:
-        await _run_game()
+        await _run_game(screen)
     except Exception:
         traceback.print_exc()
         if _is_web():
-            # Mantener vivo el runtime para que la consola muestre el error
             while True:
                 await asyncio.sleep(1)
         raise
 
 
-async def _run_game() -> None:
-    pygame.init()
+async def _run_game(screen: pygame.Surface | None = None) -> None:
+    # Import diferido: evita trabajo pesado antes del primer frame web
+    from aventura_woz.game import Game
+
+    if not pygame.get_init():
+        pygame.init()
     pygame.display.set_caption(
         "WOZ.exe — Leonardo Bianco · inspirado en Flavio Speche"
     )
 
-    if _is_web():
-        # Alinear con el framebuffer del template pygbag (1280×720)
-        flags = getattr(pygame, "SCALED", 0)
-        size = (1280, 720)
-    else:
-        flags = pygame.RESIZABLE
-        size = (config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
+    if screen is None:
+        if _is_web():
+            screen = pygame.display.set_mode((1280, 720))
+        else:
+            screen = pygame.display.set_mode(
+                (config.WINDOW_WIDTH, config.WINDOW_HEIGHT),
+                pygame.RESIZABLE,
+            )
 
-    screen = pygame.display.set_mode(size, flags)
     clock = pygame.time.Clock()
-
-    # Primer frame visible antes de cargar salas/imágenes pesadas
     screen.fill((0, 0, 40))
     pygame.display.flip()
     await asyncio.sleep(0)
 
     game = Game()
+    print("WOZ.exe: game ready", flush=True)
 
     while game.state.running:
         dt = clock.tick(config.FPS) / 1000.0
@@ -67,7 +68,6 @@ async def _run_game() -> None:
         w, h = screen.get_size()
         game.draw(screen, w, h)
         pygame.display.flip()
-        # Obligatorio para pygbag / navegador (cede el frame)
         await asyncio.sleep(0)
 
     game.music.stop()
